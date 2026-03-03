@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نديم الشعر</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a1f3a;
+            color: #f0e8d0;
+            min-height: 100vh;
+            direction: rtl;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: #051427;
+            border-bottom: 2px solid #c4a97c;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+
+        .logo {
+            font-family: 'Amiri', serif;
+            font-size: 2.3rem;
+            color: #c4a97c;
+            text-shadow: 0 0 10px rgba(196, 169, 124, 0.3);
+        }
+
+        .poets-buttons {
+            display: flex;
+            gap: 18px;
+        }
+
+        .poet-btn {
+            background: rgba(196, 169, 124, 0.1);
+            color: #c4a97c;
+            border: 1px solid #c4a97c;
+            padding: 8px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .poet-btn:hover, .poet-btn.active {
+            background: #c4a97c;
+            color: #051427;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            padding: 30px 30px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .poems-sidebar {
+            flex: 0 0 320px;
+            min-width: 320px;
+        }
+
+        .poem-preview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .poem-preview {
+            background: rgba(10, 31, 58, 0.6);
+            border: 1px solid #c4a97c;
+            border-radius: 10px;
+            padding: 18px 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .poem-preview:hover, .poem-preview.active {
+            background: rgba(196, 169, 124, 0.18);
+            transform: translateX(6px);
+            border-color: #d4c080;
+        }
+
+        .poem-preview h3 {
+            color: #c4a97c;
+            font-family: 'Amiri', serif;
+            font-size: 1.55rem;
+            margin-bottom: 6px;
+        }
+
+        .poem-preview p {
+            color: #d0c0a0;
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+
+        .poem-viewer {
+            flex: 1;
+            position: relative;
+        }
+
+        .poem-container {
+            background: #051427;
+            border: 2px solid #c4a97c;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            min-height: 500px;
+            display: none;
+        }
+
+        .poem-container.theme1 { background: #0f2a47; border-color: #a68a5c; }
+        .poem-container.theme2 { background: #1a0f2e; border-color: #b8975e; }
+        .poem-container.theme3 { background: #001f3f; border-color: #d4af37; }
+        .poem-container.theme4 { background: #0a1a2a; border-color: #c19a6b; }
+        .poem-container.theme5 { background: #112233; border-color: #e0c080; }
+
+        .poem-header {
+            background: linear-gradient(90deg, #051427 0%, #0a1f3a 100%);
+            padding: 28px 30px;
+            text-align: center;
+            border-bottom: 2px solid #c4a97c;
+        }
+
+        .poem-title {
+            font-family: 'Amiri', serif;
+            font-size: 3.1rem;
+            color: #d4c080;
+            margin-bottom: 10px;
+        }
+
+        .poem-verses {
+            padding: 40px 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 32px;
+            justify-content: center;
+        }
+
+        .verse {
+            font-family: 'Amiri', serif;
+            font-size: 2.05rem;
+            line-height: 1.65;
+            text-align: right;
+            min-width: 320px;
+            max-width: 48%;
+            padding: 16px 28px;
+            border-right: 5px solid #d4af37;
+            border-radius: 8px;
+            background: rgba(212, 192, 128, 0.06);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            flex: 1 1 320px;
+        }
+
+        .poem-description {
+            padding: 30px 45px 40px;
+            font-size: 1.18rem;
+            line-height: 1.95;
+            text-align: center;
+            color: #d0c0a0;
+        }
+
+        .poem-color-options {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.7);
+        }
+
+        .color1 { background: #0f2a47; }
+        .color2 { background: #1a0f2e; }
+        .color3 { background: #001f3f; }
+        .color4 { background: #0a1a2a; }
+        .color5 { background: #112233; }
+
+        footer {
+            background: #051427;
+            border-top: 2px solid #c4a97c;
+            text-align: center;
+            padding: 18px;
+            color: #b8a070;
+            font-size: 1rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 900;
+            box-shadow: 0 -3px 12px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+                padding: 20px;
+            }
+            .poems-sidebar {
+                flex: none;
+                min-width: auto;
+            }
+            .poem-color-options {
+                left: 50%;
+                transform: translateX(-50%);
+                top: auto;
+                bottom: 100px;
+                background: rgba(0,0,0,0.5);
+                padding: 12px 20px;
+                border-radius: 50px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .verse {
+                max-width: 100%;
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">نديم الشعر</div>
+        <div class="poets-buttons">
+            <button class="poet-btn active" data-poet="all">جميع القصائد</button>
+            <button class="poet-btn" data-poet="salman">سلمان</button>
+            <button class="poet-btn" data-poet="test">test</button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="poems-sidebar">
+            <div class="poem-preview-list" id="poemsList"></div>
+        </div>
+
+        <div class="poem-viewer">
+            <div id="poemDisplay"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 نديم الشعر | جميع الحقوق محفوظة لـ waspbyte</p>
+    </footer>
+
+    <script>
+        const allPoems = [
+            {
+                poet: "salman",
+                name: "خيبة الرجاء",
+                description: "خيبة مُحِبٍّ أضاء عمر مَحبوبه بالوفاء، ثم صُدِم بكلمةانتهى وبقسوة الرفض حتى للتضرع لله من أجل البقاء.",
+                verses: [
+                    "قَالَتْ وَقَدْ جَفَّ الكَلَامُ: انْتَهَى ",
+                    "وَهَدَتْ بِنُطْقِ الكِبْرِ كُلَّ بِنَائِي",
+                    "وَأَنَا الَّذِي أَنْـرْتُ عُمْرَكَ فَتْرَةً",
+                    "وَسَكَبْتُ نُورِي فِي دُجَى الظَّلْمَاءِ",
+                    "قُلْتُ: ادْعِي اللهَ لَعَلَّ يَجْبُرُ كَسْرَنَا",
+                    "فَالدَّعْوُ فِيهِ بَدِيـلُ كُلِّ شَقَاءِ",
+                    "فَرَفَضْتِ قَوْلِي، وَالرَّجَاءَ، وَأَدْمُعِي",
+                    "وَنَزَعْتِ حُبِّي مِنْ عُرُوقِ رَجَائِي",
+                    "اشْتَاقَتِ الأَيَّامُ بَعْدِي لِلْوَفَا",
+                    "وَبَقِيتُ وَحْدِي غَارِقًا بِبُكَائِي"
+                ]
+            },
+                        {
+                poet: "salman",
+                name: "نصرة المنكسر",
+                description: "استغاثةُ روحٍ كواها الهجر، تطلبُ النصرَ من الله والجبْرَ لقلبٍ لم يعُد له بابٌ يطرقه إلا باب السماء.",
+                verses: [
+                    "يَا رَبِّ وَالرُّوحُ تَرْجُو مِنْكَ نَصْرًا ",
+                    "فَاجْبُرْ فُؤَادًا مِنَ الأَحْزَانِ ذَابَا",
+                    "أَدْعُوكَ بِالإِلْحَاحِ وَالعَبَرَاتِ تَجْرِي",
+                    "أَنْ تَرُدَّ مَنْ لِلْقَلْبِ أَوْصَابَا",
+                    "يَا جَابِرَ العَثَرَاتِ كُنْ لِي نَصِيرًا",
+                    "فَقَدْ جَفَا خِلِّي وَسَدَّ البَابَا",
+                    "رُدَّ الحَبِيبَ الَّذِي كَانَ أُنْسِي",
+                    "وَاجْعَلْ لِقَانَا بَعْدَ اليَأْسِ إِثْيَابَا"
+                ]
+            },
+                                    {
+                poet: "salman",
+                name: "نقض الميثاق",
+                description: "عتابٌ حادٌّ لمحبوبٍ نكثَ عهود الوفاء واستبدلَ الودَّ بالغدرِ، ليتركَ القلبَ غريقاً في أحزانه.",
+                verses: [
+                    "أَيْنَ الوَفَاءُ الَّذِي قَدْ كُنْتَ تَزْعُمُهُ؟ ",
+                    "أَمْ كَانَ زَيْفًا وَخِدَاعًا وَأَوْهَامَا؟",
+                    "أَحْرَقْتَ عَهْدًا وَثِيقًا كَانَ يَجْمَعُنَا",
+                    "وَخُنْتَ قَلْبًا أَصِيلًا صَانَ إِكْرَامَا",
+                    "قَدْ قُلْتَ لِي لَنْ أَخُونَ الوَعْدَ ثَانِيَةً",
+                    "فَكَيْفَ أَلْبَسْتَنِي حُزْنًا وَإِعْدَامَا؟",
+                    "مَزَّقْتَ ذِكْرَى تَمَنَّيْنَا بَقَاءَهَا",
+                    "وَجِئْتَ تَغْرِسُ فِي الأَحْشَاءِ آلَامَا",
+                    "يَا نَاكِثَ العَهْدِ لَا تَرْجُو مَوَدَّتَنَا",
+                    "بِئْسَ الَّذِي بَاعَ ذِكْرَايَ وَاسْتَقَامَا"
+                ]
+            },
+                                                {
+                poet: "salman",
+                name: "اعتراف الغدر",
+                description: "مواجهةٌ أخيرةٌ بَيْن وفاءٍ ذبيحٍ واعترافٍ باردٍ بالخيانة، تنتهي بقرارِ دفنِ القلبِ وقطعِ السلامِ عمنْ نكثَ العهود.",
+                verses: [
+ "أَيْنَ العُهُودُ الَّتِي بِالحُبِّ تَقْطَعُهَا؟",
+        "أَمْ كَانَ قَوْلُكِ زُورًا وَهِيَ أَوْهَامَا؟",
+        "أَتَخُونُ ذِكْرَىٰ بِطُولِ الدَّهْرِ تَجْمَعُنَا",
+        "وَتَبِيعُ عَهْدًا شَرِيفًا كَانَ صَمَّامَا؟",
+        "قَدْ قُلْتِ لِي: لَا أَخُونُ الوَعْدَ لَحْظَةً",
+        "فَإِذَا بِوَعْدِكِ غَدْرٌ صَارَ سِجَّامَا",
+        "أَسْرَيْتُ فِيكِ حَنِينِي وَالرَّجَا أَمَلِي",
+        "وَجَعَلْتُ حُبَّكِ لِلْمَحْرُومِ إِكْرَامَا",
+        "كَيْفَ السَّبِيلُ وَقَدْ جَفَّتْ مَنَابِعُنَا؟",
+        "وَصَارَ ذِكْرُكِ فِي الأَنْفَاسِ آلَامَا",
+        "فَأَجَابَتْ وَبِرِدَاءِ القَسْوَةِ تَلْتَحِفُ:",
+        "\"نَعَمْ.. خُنْتُ، وَهَدَمْتُ لَكَ الأَحْلَامَا\"",
+        "\"أَقْرَرْتُ أَنِّي نَكَثْتُ العَهْدَ عَنْ مَقْدِرَةٍ",
+        "وَجَعَلْتُ نَبْضَكَ بَعْدِي عَدَمًا وَحُطَامَا\"",
+        "\"لَا تَنْتَظِرْ مِنِّي رُجُوعًا أَوْ حَنِينًا",
+        "فَقَدْ وَأَدْتُ الهَوَىٰ بَعْدَكِ إِعْدَامَا\"",
+        "وَيْحِي! أَبَعْدَ اعْتِرَافِ الغَدْرِ نَبْكِيهِمْ؟",
+        "وَنَبْنِي لِلَّذِي بَاعَ الصِّدْقَ أَعْلَامَا؟",
+        "بِئْسَ الَّذِي ضَيَّعَ المِيثَاقَ فِي صَلَفٍ",
+        "وَأَحَالَ صَرْحَ الهَوَىٰ بَعْدِي حُطَامَا",
+        "سَأَدْفِنُ القَلْبَ فِي أَرْضٍ بِلَا أَثَرٍ",
+        "وَلَا أُعِيدُ لِمَنْ خَانُوا الوَفَا السَّلَامَا"
+                ]
+            },
+                                                {
+                poet: "salman",
+                name: "ملاذ الـمفتقر",
+                description: "استغاثةُ روحٍ كواها الهجر، تطلبُ الجبْرَ من الله والسكينة لقلبٍ لم يعُد له بابٌ يطرقه إلا باب السماء.",
+                verses: [
+       "يَا مَنْ لَهُ المُلْكُ وَالآفَاقُ خَاضِعَةٌ",
+        "يَا غَافِرَ الذَّنْبِ يَا مَنْ بَرَّأَ النَّسَمَا",
+        "قَدْ جِئْتُ بَابَكَ وَالأَوْزَارُ تُثْقِلُنِي",
+        "بَعْدَ ابْتِعَادِي وَقَلْبِي كَانَ قَدْ عَمِيَا",
+        "أَسْرَفْتُ فِي البُعْدِ عن نُورِ الهُدَى زَمَنًا",
+        "وَمَا وَجَدْتُ سِوَى الآهَاتِ وَالأَلَمَا",
+        "يَا رَبِّ هَذَا رَجَائِي أَنْتَ تَعْلَمُهُ",
+        "فَارْدُدْ حَبِيبًا بِيَوْمِ البَيْنِ قَدْ حُرِمَا",
+        "وَارْحَمْ فُؤَادًا بَاتَ الشَّوْقُ يَحْرِقُهُ",
+        "فَأَنْتَ وَحْدَكَ مَنْ يَجْلُو لِيَ الظُّلَمَا"
+                ]
+            },
+            {
+                poet: "test",
+                name: "test",
+                description: "test.",
+                verses: [
+                    "test",
+                    "test",
+                    "test"
+                ]
+            }
+            // أضف قصائد أخرى هنا لاحقاً
+        ];
+
+        const poemsList = document.getElementById('poemsList');
+        const poemDisplay = document.getElementById('poemDisplay');
+
+        function renderPoems(poetFilter = 'all') {
+            poemsList.innerHTML = '';
+            const filtered = poetFilter === 'all' 
+                ? allPoems 
+                : allPoems.filter(p => p.poet === poetFilter);
+
+            filtered.forEach(poem => {
+                const preview = document.createElement('div');
+                preview.className = 'poem-preview';
+                preview.innerHTML = `
+                    <h3>${poem.name}</h3>
+                    <p>${poem.description.substring(0, 90)}...</p>
+                `;
+                preview.onclick = () => showPoem(poem, preview);
+                poemsList.appendChild(preview);
+            });
+        }
+
+        function showPoem(poem, clickedPreview) {
+            document.querySelectorAll('.poem-preview').forEach(el => el.classList.remove('active'));
+            clickedPreview.classList.add('active');
+
+            poemDisplay.innerHTML = `
+                <div class="poem-container theme3" id="currentPoem">
+                    <div class="poem-color-options">
+                        <div class="color-btn color1" data-theme="theme1"></div>
+                        <div class="color-btn color2" data-theme="theme2"></div>
+                        <div class="color-btn color3" data-theme="theme3"></div>
+                        <div class="color-btn color4" data-theme="theme4"></div>
+                        <div class="color-btn color5" data-theme="theme5"></div>
+                    </div>
+                    <div class="poem-header">
+                        <div class="poem-title">${poem.name}</div>
+                    </div>
+                    <div class="poem-verses">
+                        ${poem.verses.map(v => `<div class="verse">${v}</div>`).join('')}
+                    </div>
+                    <div class="poem-description">${poem.description}</div>
+                </div>
+            `;
+
+            const container = document.getElementById('currentPoem');
+            container.style.display = 'block';
+
+            container.querySelectorAll('.color-btn').forEach(btn => {
+                btn.onclick = () => {
+                    container.className = 'poem-container ' + btn.dataset.theme;
+                };
+            });
+
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        document.querySelectorAll('.poet-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.poet-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                poemDisplay.innerHTML = '';
+                renderPoems(btn.dataset.poet);
+            });
+        });
+
+        // ─────────────── محاولة حماية ضد فتح أدوات المطور ───────────────
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && ['i','I','j','J','c','C'].includes(e.key)) ||
+                (e.ctrlKey && ['u','U'].includes(e.key))
+            ) {
+                e.preventDefault();
+                alert("أدوات المطورين معطلة في هذا الموقع.");
+                return false;
+            }
+        });
+
+        // كشف إذا تم فتح DevTools (طريقة تقريبية)
+        setInterval(() => {
+            if (
+                window.outerWidth - window.innerWidth > 160 ||
+                window.outerHeight - window.innerHeight > 160
+            ) {
+                document.body.innerHTML = `
+                    <div style="color:#fff; font-size:3rem; text-align:center; padding:150px 20px;">
+                        لايمكن لك الاطلاع على ادوات المطور<br>
+                        يرجى إغلاقها للاستمرار
+                    </div>
+                `;
+            }
+        }, 1500);
+
+        // التهيئة الأولية
+        renderPoems('all');
+    </script>
+</body>
+</html>
